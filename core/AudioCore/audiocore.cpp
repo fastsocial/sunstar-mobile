@@ -5,6 +5,11 @@ AudioCore::AudioCore()
     destinationFile.setFileName("./test.raw");
 }
 
+AudioCore::~AudioCore()
+{
+    delete audio;
+}
+
 void AudioCore::RecordAudioToFile()
 {
     destinationFile.open( QIODevice::WriteOnly | QIODevice::Truncate );
@@ -35,11 +40,10 @@ void AudioCore::RecordAudioToFile()
     audio->start(&destinationFile);
 }
 
-void AudioCore::StopRecording()
+void AudioCore::stopRecording()
 {
     audio->stop();
     destinationFile.close();
-    delete audio;
 }
 
 void AudioCore::handleStateChanged(QAudio::State newState)
@@ -49,7 +53,7 @@ void AudioCore::handleStateChanged(QAudio::State newState)
             if (audio->error() != QAudio::NoError) {
                 // Error handling
             } else {
-                // Finished recording
+                qDebug() << "Stopp recording";
             }
             break;
 

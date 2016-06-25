@@ -11,15 +11,23 @@
 
 class AudioCore : public QObject
 {
-public:
-    AudioCore();
+    Q_OBJECT
 
-    void RecordAudioToFile();
-    void StopRecording();
-    void handleStateChanged(QAudio::State);
-private:
-    QFile destinationFile;   // Class member
-    QAudioInput* audio;
+    public:
+        AudioCore();
+        ~AudioCore();
+        void RecordAudioToFile();
+
+    public slots:
+
+        void stopRecording();
+        void handleStateChanged(QAudio::State);
+
+    signals:
+
+    private:
+        QFile destinationFile;   // Class member
+        QAudioInput* audio;
 };
 
 #endif // AUDIOCORE_H
