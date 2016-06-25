@@ -16,9 +16,9 @@ void AudioCore::RecordAudioToFile()
 
     QAudioFormat format;
     // Set up the desired format, for example:
-    format.setSampleRate(8000);
+    format.setSampleRate(44100);
     format.setChannelCount(1);
-    format.setSampleSize(8);
+    format.setSampleSize(16);
     format.setCodec("audio/pcm");
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::UnSignedInt);
@@ -34,6 +34,7 @@ void AudioCore::RecordAudioToFile()
     }
 
     audio = new QAudioInput(format);
+    audio->setVolume(2.0);
     connect(audio, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChanged(QAudio::State)));
 
     QTimer::singleShot(3000, this, SLOT(stopRecording()));
