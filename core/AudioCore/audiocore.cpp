@@ -2,7 +2,7 @@
 
 AudioCore::AudioCore()
 {
-    destinationFile.setFileName("./test.raw");
+    destinationFile.setFileName("./output_for_gnuplot.txt");
 }
 
 AudioCore::~AudioCore()
@@ -13,19 +13,19 @@ AudioCore::~AudioCore()
 void AudioCore::RecordAudioToFile()
 {
     destinationFile.open( QIODevice::WriteOnly | QIODevice::Truncate );
-
+    audioBuffer.open(QBuffer::ReadWrite);
     QAudioFormat format;
+
     // Set up the desired format, for example:
-    format.setSampleRate(44100);
+    format.setSampleRate(441000);
     format.setChannelCount(1);
-    format.setSampleSize(16);
+    format.setSampleSize(32);
     format.setCodec("audio/pcm");
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::UnSignedInt);
 
-//print out the input device setup parameters
-     QAudioDeviceInfo info(QAudioDeviceInfo::availableDevices(QAudio::AudioInput).at(0));     //select output device 0
-     qDebug() << "Selected input device =" << info.deviceName();
+    QAudioDeviceInfo info(QAudioDeviceInfo::availableDevices(QAudio::AudioInput).at(0));     //select output device 0
+    qDebug() << "Selected input device =" << info.deviceName();
 
 
     if (!info.isFormatSupported(format)) {
@@ -34,16 +34,34 @@ void AudioCore::RecordAudioToFile()
     }
 
     audio = new QAudioInput(format);
-    audio->setVolume(2.0);
+
+    // Очень важно, иначе будут шумы и все картинки ужасно некрасивые.
+    audio->setVolume(0.1);
     connect(audio, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChanged(QAudio::State)));
 
-    QTimer::singleShot(3000, this, SLOT(stopRecording()));
-    audio->start(&destinationFile);
+    QTimer::singleShot(10000, this, SLOT(stopRecording()));
+    audio->start(&audioBuffer);
 }
 
 void AudioCore::stopRecording()
 {
     audio->stop();
+    qDebug() << QString::number(audioBuffer.data().size());
+    QByteArray data = audioBuffer.data();
+    for (int i = 0; i < data.size(); i ++) {
+        int res = 0;
+
+        if (i % 4 == 0) {
+            if (i + 4 < data.size()) {
+                for (int j = 0; j < 4; j ++) {
+                    res += data[i  + j] << (j * 8);
+                }
+            }
+            QString number = QString::number(res);
+            destinationFile.write(number.toStdString().c_str());
+            destinationFile.write("\n");
+        }
+    }
     destinationFile.close();
 }
 

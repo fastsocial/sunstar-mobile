@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QObject>
 #include <QIODevice>
+#include <QBuffer>
 #include <QAudioOutput>
 
 class AudioCore : public QObject
@@ -27,6 +28,7 @@ class AudioCore : public QObject
 
     private:
         QFile destinationFile;   // Class member
+        QBuffer audioBuffer;
         QAudioInput* audio;
 };
 
