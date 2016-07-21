@@ -17,19 +17,30 @@ class AudioCore : public QObject
     public:
         AudioCore();
         ~AudioCore();
-        void RecordAudioToFile();
+        void recordAudioSample(int, bool);
+        double *getAudioSampleFourier();
+
+        static const double AudioLevel = 0.1;
+        static const int    SampleSize = 4;
+        static const int    SampleRate = 44100;
+        static const int    FFTN       = 2048;
 
     public slots:
-
         void stopRecording();
         void handleStateChanged(QAudio::State);
 
     signals:
+        void endedRecordingAndProcessing();
 
     private:
-        QFile destinationFile;   // Class member
-        QBuffer audioBuffer;
+        QFile destinationFile;
+        QBuffer sampleAudioBuffer;
         QAudioInput* audio;
+        int latestSampleDuration;
+        bool writeSampleToFile;
+        double *primaryAudioData;
+        double *fourierAudioData;
+        int latestAllocatedSize;
 };
 
 #endif // AUDIOCORE_H
