@@ -1,2 +1,4 @@
-core/AudioCore-Debug/**
+core/AudioCore-Debug*
+core/AudioCore/AudioCore.pro.user*
+core/AudioCore/AudioCore.pro.user
 README.txt~
